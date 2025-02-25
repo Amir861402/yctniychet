@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Устный счёт для 5-6 классов</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 20px;
+    }
+    .task {
+      font-size: 20px;
+      margin: 10px;
+      padding: 15px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 600px;
+    }
+    input {
+      font-size: 16px;
+      padding: 8px;
+      margin: 5px;
+      border: 2px solid #3498db;
+      border-radius: 5px;
+    }
+    button {
+      font-size: 16px;
+      padding: 8px 16px;
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 10px;
+      transition: transform 0.2s ease, background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #2980b9;
+      transform: scale(1.05);
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+    .result {
+      font-size: 16px;
+      margin: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .correct {
+      color: #27ae60;
+    }
+    .incorrect {
+      color: #e74c3c;
+    }
+    .progress-container {
+      width: 80%;
+      max-width: 600px;
+      margin: 20px auto;
+      text-align: left;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background-color: #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress {
+      height: 100%;
+      background-color: #3498db;
+      width: 0;
+      transition: width 0.3s ease;
+    }
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 5px;
+      font-size: 14px;
+      color: #555;
+    }
+    .grade {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 20px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Тренировка устного счёта</h1>
+  <div class="task-list" id="task-list"></div>
+  <button onclick="checkAllAnswers()">Проверить все ответы</button>
+  <div class="progress-container">
+    <div class="progress-bar">
+      <div class="progress" id="progress"></div>
+    </div>
+    <div class="progress-labels">
+      <span>0%</span>
+      <span>10%</span>
+      <span>20%</span>
+      <span>30%</span>
+      <span>40%</span>
+      <span>50%</span>
+      <span>60%</span>
+      <span>70%</span>
+      <span>80%</span>
+      <span>90%</span>
+      <span>100%</span>
+    </div>
+  </div>
+  <div class="grade" id="grade"></div>
+
+  <script>
+    let tasks = [];
+
+    // Генерация случайного примера
+    function generateTask(type) {
+      let question, answer;
+      switch (type) {
+        case 'fraction':
+          const a = Math.floor(Math.random() * 10) + 1;
+          const b = Math.floor(Math.random() * 10) + 1;
+          const c = Math.floor(Math.random() * 10) + 1;
+          const d = Math.floor(Math.random() * 10) + 1;
+          question = `${a}/${b} + ${c}/${d} = ?`;
+          answer = ((a * d + c * b) / (b * d)).toFixed(2);
+          break;
+
+        case 'decimal':
+          const x = (Math.random() * 10).toFixed(1);
+          const y = (Math.random() * 10).toFixed(1);
+          question = `${x} * ${y} = ?`;
+          answer = (x * y).toFixed(2);
+          break;
+
+        case 'percentage':
+          const num = Math.floor(Math.random() * 100) + 1;
+          const percent = Math.floor(Math.random() * 50) + 1;
+          question = `${percent}% от ${num} = ?`;
+          answer = ((num * percent) / 100).toFixed(2);
+          break;
+
+        case 'equation':
+          const a1 = Math.floor(Math.random() * 10) + 1;
+          const b1 = Math.floor(Math.random() * 10) + 1;
+          const x = Math.floor(Math.random() * 10) + 1; // Случайный корень
+          question = `${a1}x + ${b1} = ${a1 * x + b1}. Найдите x.`;
+          answer = x;
+          break;
+
+        case 'speed':
+          const objects = ['автомобиль', 'велосипедист', 'лодка', 'поезд', 'пешеход'];
+          const object = objects[Math.floor(Math.random() * objects.length)];
+          const speedTypes = ['speed', 'time', 'distance'];
+          const speedType = speedTypes[Math.floor(Math.random() * speedTypes.length)];
+
+          let speed, time, distance;
+          switch (speedType) {
+            case 'speed':
+              distance = Math.floor(Math.random() * 100) + 1;
+              time = Math.floor(Math.random() * 10) + 1;
+              question = `${object} проехал ${distance} км за ${time} часа. Найдите скорость.`;
+              answer = (distance / time).toFixed(2);
+              break;
+
+            case 'time':
+              distance = Math.floor(Math.random() * 100) + 1;
+              speed = Math.floor(Math.random() * 50) + 1;
+              question = `${object} движется со скоростью ${speed} км/ч. За какое время он преодолеет ${distance} км?`;
+              answer = (distance / speed).toFixed(2);
+              break;
+
+            case 'distance':
+              speed = Math.floor(Math.random() * 50) + 1;
+              time = Math.floor(Math.random() * 10) + 1;
+              question = `${object} движется со скоростью ${speed} км/ч. Какое расстояние он преодолеет за ${time} часа?`;
+              answer = (speed * time).toFixed(2);
+              break;
+          }
+          break;
+      }
+      return { type, question, answer, userAnswer: null, isCorrect: false };
+    }
+
+    // Загрузка 5 примеров каждого типа
+    function loadTasks() {
+      const types = ['fraction', 'decimal', 'percentage', 'equation', 'speed'];
+      tasks = [];
+      types.forEach(type => {
+        for (let i = 0; i < 5; i++) {
+          tasks.push(generateTask(type));
+        }
+      });
+      renderTasks();
+    }
+
+    // Отображение задач
+    function renderTasks() {
+      const taskList = document.getElementById('task-list');
+      taskList.innerHTML = tasks.map((task, index) => `
+        <div class="task">
+          <div>${task.question}</div>
+          <input type="text" id="answer-${index}" placeholder="Ваш ответ">
+          <div class="result" id="result-${index}"></div>
+        </div>
+      `).join('');
+    }
+
+    // Проверка всех ответов
+    function checkAllAnswers() {
+      let correctCount = 0;
+      tasks.forEach((task, index) => {
+        const userAnswer = parseFloat(document.getElementById(`answer-${index}`).value);
+        task.userAnswer = userAnswer;
+        task.isCorrect = userAnswer === parseFloat(task.answer);
+
+        const resultDiv = document.getElementById(`result-${index}`);
+        if (task.isCorrect) {
+          resultDiv.innerText = 'Правильно!';
+          resultDiv.className = 'result correct';
+          correctCount++;
+        } else {
+          resultDiv.innerText = `Ошибка! Правильный ответ: ${task.answer}`;
+          resultDiv.className = 'result incorrect';
+        }
+        resultDiv.style.opacity = 1; // Показываем результат с анимацией
+      });
+
+      updateProgress(correctCount);
+      showGrade(correctCount);
+    }
+
+    // Обновление шкалы прогресса
+    function updateProgress(correctCount) {
+      const progress = (correctCount / tasks.length) * 100;
+      document.getElementById('progress').style.width = `${progress}%`;
+    }
+
+    // Показать оценку
+    function showGrade(correctCount) {
+      const gradeElement = document.getElementById('grade');
+      const percentage = (correctCount / tasks.length) * 100;
+
+      let grade;
+      if (percentage >= 90) grade = '5️⃣';
+      else if (percentage >= 70) grade = '4️⃣';
+      else if (percentage >= 50) grade = '3️⃣';
+      else grade = '2️⃣';
+
+      gradeElement.innerText = `Оценка: ${grade}`;
+      gradeElement.style.opacity = 1; // Показываем оценку с анимацией
+    }
+
+    // Загружаем задачи при загрузке страницы
+    window.onload = loadTasks;
+  </script>
+</body>
+</html>
